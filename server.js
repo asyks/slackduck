@@ -48,16 +48,23 @@ app.get('/auth/redirect', function(req, res) {
         var JSONresponse = JSON.parse(body)
 
         if (!JSONresponse.ok) {
-            console.log(JSONresponse)
             res.send(
                 "Error encountered: \n"+JSON.stringify(JSONresponse)
             ).status(200).end()
         }
         else {
-            console.log(JSONresponse)
+            var options = {
+                uri: 'https://slack.com/api/rtm.connect',
+                form: {
+                    'token': JSONresponse.bot.bot_access_token
+                }
+            }
             res.send("Success!")
+            console.log(JSONresponse)
+            request.post(options, function(error, response, body) {
+                console.log(JSON.parse(body))
+            })
         }
-
     }
 
     request(options, callback)
