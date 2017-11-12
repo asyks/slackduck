@@ -56,9 +56,20 @@ function connect_websocket(error, response, body) {
     ws.onmessage = function(message) {
         if (typeof message.data === 'string') {
             console.log("Received: '" + message.data + "'");
+            var msg_data = JSON.parse(message.data)
+            if (typeof msg_data.type === 'string' && msg_data.type === 'message') {
+                console.log(msg_data.channel)
+                ws.send(
+                    JSON.stringify({
+                        "id": 1,
+                        "type": "message",
+                        "channel": msg_data.channel,
+                        "text": "message recieved!"
+                    })
+                )
+            }
         }
     }
-
 }
 
 function send_rtm_connect_request(token) {
