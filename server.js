@@ -1,9 +1,11 @@
 'use strict'
 
 require('dotenv').config()
+
 const express = require('express')
 const request = require('request')
-var WebSocket = require('websocket').w3cwebsocket
+
+const slacksocket = require('./slacksocket')
 
 // Constants
 const PORT = 8080
@@ -27,7 +29,6 @@ app.get('/', function(req, res) {
 
 // bot token
 var bot_token = null
-var websocket_url = null
 
 app.get('/another-route', function(req, res) {
     var payload = {'jsonkey': 'jsonvalue', 'jsonkey2': 2}
@@ -39,39 +40,6 @@ app.get('/auth', function(req, res) {
     res.sendFile(__dirname + '/add_to_slack.html')
 })
 
-function connect_websocket(error, response, body) {
-    var JSONResponse = JSON.parse(body)
-    websocket_url = JSONResponse.url
-
-    var ws = new WebSocket(websocket_url);
-
-    ws.onopen = function() {
-        console.log('WebSocket Client Connected')
-    }
-
-    ws.onerror = function() {
-        console.log('Connection Error')
-    }
-
-    ws.onmessage = function(message) {
-        if (typeof message.data === 'string') {
-            console.log("Received: '" + message.data + "'");
-            var msg_data = JSON.parse(message.data)
-            if (typeof msg_data.type === 'string' && msg_data.type === 'message') {
-                console.log(msg_data.channel)
-                ws.send(
-                    JSON.stringify({
-                        "id": 1,
-                        "type": "message",
-                        "channel": msg_data.channel,
-                        "text": "message recieved!"
-                    })
-                )
-            }
-        }
-    }
-}
-
 function send_rtm_connect_request(token) {
     var options = {
         uri: 'https://slack.com/api/rtm.connect',
@@ -80,7 +48,7 @@ function send_rtm_connect_request(token) {
         }
     }
 
-    request.post(options, connect_websocket)
+    request.post(options, slacksocket)
 }
 
 
