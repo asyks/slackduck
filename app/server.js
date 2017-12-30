@@ -31,7 +31,7 @@ app.get('/', function(req, res) {
 var bot_token = null
 
 app.get('/another-route', function(req, res) {
-    var payload = {'jsonkey': 'jsonvalue', 'jsonkey2': 2}
+    var payload = {'jsonkey': 'value', 'jsonkey2': 2}
     console.log('Payload: ', payload)
     res.json(payload)
 })
