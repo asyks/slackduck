@@ -4,6 +4,9 @@ var WebSocket = require('websocket').w3cwebsocket
 
 var websocket_url = null
 
+const { Requester } = require("node-duckduckgo");
+const requester = new Requester("node-slackipedia");
+
 function connect_websocket(error, response, body) {
     var JSONResponse = JSON.parse(body)
     websocket_url = JSONResponse.url
@@ -23,7 +26,7 @@ function connect_websocket(error, response, body) {
             console.log("Received: '" + message.data + "'");
             var msg_data = JSON.parse(message.data)
             if (typeof msg_data.type === 'string' && msg_data.type === 'message') {
-                console.log(msg_data.channel)
+                console.log(msg_data.text)
                 ws.send(
                     JSON.stringify({
                         "id": 1,
@@ -32,6 +35,14 @@ function connect_websocket(error, response, body) {
                         "text": "message recieved!"
                     })
                 )
+
+                requester.request(msg_data.text, (err, response, body) => {
+                    if (err) {
+                        console.log(err);
+                        return;
+                    }
+                    console.log(body);
+                });
             }
         }
     }

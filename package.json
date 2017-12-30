@@ -11,6 +11,7 @@
     "dotenv": "^4.0.0",
     "express": "^4.13.3",
     "request": "^2.81.0",
-    "websocket": "^1.0.25"
+    "websocket": "^1.0.25",
+    "node-duckduckgo": "^1.0.5"
   }
 }
