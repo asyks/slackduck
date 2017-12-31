@@ -2,21 +2,31 @@
 
 ## Building and Running Slackipedia
 
-Build
+Build using docker-compose
 
-`$ docker build -t slackipedia --force-rm .`
+`$ docker-compose build --force-rm`
 
-Run, remapping port 8080 to port 49160 (or any other of your choosing) on localhost
+Run, using docker-compose
 
-`$ docker run -p 49160:8080 -d slackipedia`
+`$ docker-compose up`
 
-Follow logs
+Or run in daemon mode, and follow logs
 
-`$ docker logs --follow <container-id>`
+`$ docker-compose up -d`
 
-Kill (before rebuilding)
+`$ docker logs -f slackipedia_web_1`
+
+Removing stopped containers with docker-compose
+
+`$ docker-compose rm`
+
+Kill running containers (if necessary before rebuilding)
 
 `$ docker kill $(docker ps -q)`
+
+Remove docker images
+
+`$ docker rmi -f $(docker images -q)`
 
 ### Running locally with ngrok
 
