@@ -1,24 +1,16 @@
 FROM node:latest
 
-# install nodemon for development
+# Install nodemon for development
 RUN npm install --global nodemon
 
-# Create directory
-WORKDIR /usr/src
+# Create and change to app directory
+WORKDIR /usr/src/app
+
+# Add package.json to container
+ADD package.json .
 
 # Install app dependencies
-COPY package.json .
-# For npm@5 or later, copy package-lock.json as well
-# COPY package.json package-lock.json .
-
 RUN npm install
 
-# Bundle app source
-WORKDIR /usr/src/app
-COPY ./app .
-
-RUN pwd
-RUN ls -l .
-
+# Explose port 8080 on the container
 EXPOSE 8080
-CMD [ "nodemon", "./server.js" ]
