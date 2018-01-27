@@ -1,6 +1,6 @@
-# Slackipedia
+# slackduck
 
-## Building and Running Slackipedia
+## Building and Running slackduck
 
 Build using docker-compose
 
@@ -14,7 +14,7 @@ Or run in daemon mode, and follow logs
 
 `$ docker-compose up -d`
 
-`$ docker logs -f slackipedia_web_1`
+`$ docker logs -f slackduck_web_1`
 
 Removing stopped containers with docker-compose
 
@@ -33,6 +33,6 @@ Remove docker images
 Slack uses Oauth2 for RTM API authentication, so in order to test locally
 you have to have a port on your local machine exposed. One easy way to 
 accomplish that is by using ngrok. You can download ngrock here - https://ngrok.com/download.
-To run ngrock to test slackipedia use the following command.
+To run ngrock to test slackduck use the following command.
 
 `$ ngrok http 49160`
