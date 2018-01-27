@@ -1,7 +1,7 @@
 {
-  "name": "slackipedia",
+  "name": "slackduck",
   "version": "1.0.0",
-  "description": "Slackipedia Node.js app",
+  "description": "slackduck Node.js app",
   "author": "Aaron Sykes <aaron@aaronsykes.com>",
   "main": "server.js",
   "scripts": {
