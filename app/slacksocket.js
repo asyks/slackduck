@@ -1,6 +1,6 @@
 'use strict'
 
-var WebSocket = require('websocket').w3cwebsocket
+const WebSocket = require('websocket').w3cwebsocket
 
 var websocket_url = null
 

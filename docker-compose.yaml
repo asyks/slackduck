@@ -1,0 +1,8 @@
+web:
+  build: .
+  command: nodemon ./server.js
+  volumes:
+    - /usr/src/app/node_modules
+    - ./app:/usr/src/app
+  ports:
+    - "49160:8080"

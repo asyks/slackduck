@@ -1,17 +1,16 @@
-FROM node:boron
+FROM node:latest
 
-# Create app directory
+# Install nodemon for development
+RUN npm install --global nodemon
+
+# Create and change to app directory
 WORKDIR /usr/src/app
 
-# Install app dependencies
-COPY package.json .
-# For npm@5 or later, copy package-lock.json as well
-# COPY package.json package-lock.json .
+# Add package.json to container
+ADD package.json .
 
+# Install app dependencies
 RUN npm install
 
-# Bundle app source
-COPY . .
-
+# Explose port 8080 on the container
 EXPOSE 8080
-CMD [ "npm", "start" ]
