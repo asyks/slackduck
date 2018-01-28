@@ -1,11 +1,9 @@
 'use strict'
 
 const WebSocket = require('websocket').w3cwebsocket
+const duckduckgoer = require('./duckduckgoer')
 
 var websocket_url = null
-
-const { Requester } = require("node-duckduckgo");
-const requester = new Requester("node-slackipedia");
 
 function create_response_payload(msg_channel, msg_text) {
     return JSON.stringify(
@@ -50,7 +48,7 @@ function connect_websocket(error, response, body) {
             var msg_channel = msg_data.channel
             var msg_text = msg_data.text.slice(13)
 
-            send_duck_duck_go_request(msg_text)
+            duckduckgoer(msg_text)
 
             var response_payload = create_response_payload(
                 msg_channel, msg_text
@@ -59,19 +57,6 @@ function connect_websocket(error, response, body) {
             ws.send(response_payload)
         }
     }
-}
-
-function send_duck_duck_go_request(msg_data) {
-
-    requester.request(msg_data.text)
-        .on("data", (data) => {
-            console.log("Data recieved");
-            console.log(data.toString());
-        })
-        .on("error", (err) => {
-            console.log("ERROR!");
-            console.log(err);
-        });
 }
 
 module.exports = connect_websocket
