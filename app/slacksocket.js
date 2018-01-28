@@ -41,7 +41,7 @@ function connect_websocket(error, response, body) {
         if (typeof message.data === 'string') {
             var msg_data = JSON.parse(message.data)
 
-            console.log("Received: '" + msg_data + "'")
+            console.log("Received: ", msg_data)
         }
 
         if (
