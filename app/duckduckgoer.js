@@ -1,19 +1,26 @@
 'use strict'
 
 const { Requester } = require("node-duckduckgo");
-const requester = new Requester("node-slackipedia");
+const requester = new Requester("node-slackduck");
 
-function send_request(msg_data) {
+requester.no_html = 1
 
-    requester.request(msg_data.text)
-        .on("data", (data) => {
-            console.log("Data recieved");
-            console.log(data.toString());
-        })
-        .on("error", (err) => {
-            console.log("ERROR!");
+function send_request(query_str) {
+
+    requester.request(query_str, (err, response, body) => {
+        if (err) {
             console.log(err);
-        });
+            return;
+        }
+        console.log("DuckDuckGo response recieved");
+
+        var json_body = JSON.parse(body)
+        var result_url = json_body.AbstractURL
+
+        console.log(json_body.AbstractURL);
+
+        return result_url
+    });
 }
 
 module.exports = send_request

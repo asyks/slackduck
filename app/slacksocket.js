@@ -48,10 +48,10 @@ function connect_websocket(error, response, body) {
             var msg_channel = msg_data.channel
             var msg_text = msg_data.text.slice(13)
 
-            duckduckgoer(msg_text)
+            var result_url = duckduckgoer(msg_text)
 
             var response_payload = create_response_payload(
-                msg_channel, msg_text
+                msg_channel, result_url
             )
 
             ws.send(response_payload)

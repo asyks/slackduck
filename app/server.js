@@ -2,8 +2,9 @@
 
 require('dotenv').config()
 
+const req = require('request')
 const express = require('express')
-const authenticate = require('./auth')
+const auth = require('./auth')
 
 // Constants
 const PORT = 8080
@@ -13,31 +14,39 @@ const HOST = '0.0.0.0'
 const app = express()
 
 // Middleware
-app.use(function timeLog (req, res, next) {
+app.use(function timeLog (request, response, next) {
     console.log('Time: ', Date.now())
     next()
 })
 
 // Routes
-app.get('/', function(req, res) {
+app.get('/', function(request, response) {
     var payload = {
         'page': 'home',
         'content': 'none yet'
     }
 
-    res.json(payload)
+    response.json(payload)
 })
 
-app.get('/auth', function(req, res) {
-    res.sendFile(__dirname + '/add_to_slack.html')
+app.get('/auth', function(request, response) {
+    response.sendFile(__dirname + '/add_to_slack.html')
 })
 
-app.get('/auth/redirect', function(req, res) {
-    authenticate(req, res)
+app.get('/auth/redirect', function(request, response) {
+    req.get(auth.options(request), function(error, auth_response, body) {
+        response.send("App Connection Success!")
+
+        var bot_token = JSON.parse(body).bot.bot_access_token
+
+        auth.rtm_connect(bot_token)
+    })
 })
 
-app.post('/command', function(req, res) {
-    res.send('Your ngrok tunnel is up and running!')
+//Error Handling
+app.use((err, request, response, next) => {
+    console.log(err)
+    response.status(500).send('Something broke!')
 })
 
 app.listen(PORT, HOST)
