@@ -1,28 +1,35 @@
 'use strict'
 
-const req = require('request')
-const slacksocket = require('./slacksocket')
+const req = require('request-promise')
 
-module.exports.options = options
-module.exports.rtm_connect = rtm_connect
+module.exports.authOptions = authOptions
+module.exports.rtmConnect = rtmConnect
 
-function options(request) {
+function authOptions(queryCode) {
     return {
+        method: 'POST',
         uri: 'https://slack.com/api/oauth.access?code='
-            + request.query.code +
+            + queryCode +
             '&client_id='+ process.env.CLIENT_ID+
             '&client_secret='+ process.env.CLIENT_SECRET+
-            '&redirect_uri='+ process.env.REDIRECT_URI
+            '&redirect_uri='+ process.env.REDIRECT_URI,
+        json: true
     }
 }
 
-function rtm_connect(token) {
-    var options = {
+function rtmAuthOptions(token) {
+    return {
+        method: 'POST',
         uri: 'https://slack.com/api/rtm.connect',
         form: {
             'token': token
-        }
+        },
+        json: true
     }
+}
 
-    req.post(options, slacksocket)
+function rtmConnect(token) {
+    var options = rtmAuthOptions(token)
+
+    return req(options)
 }

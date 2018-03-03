@@ -2,9 +2,11 @@
 
 require('dotenv').config()
 
-const req = require('request')
 const express = require('express')
+const req = require('request-promise')
+
 const auth = require('./auth')
+const slacksocket = require('./slacksocket')
 
 // Constants
 const PORT = 8080
@@ -34,13 +36,24 @@ app.get('/auth', function(request, response) {
 })
 
 app.get('/auth/redirect', function(request, response) {
-    req.get(auth.options(request), function(error, auth_response, body) {
-        response.send("App Connection Success!")
 
-        var bot_token = JSON.parse(body).bot.bot_access_token
+    var queryCode = request.query.code
+    var options = auth.authOptions(queryCode)
 
-        auth.rtm_connect(bot_token)
-    })
+    req(options)
+        .then(function(body) {
+            response.send('App Connection Success!')
+
+            var rtmRequest = auth.rtmConnect(body.bot.bot_access_token)
+
+            rtmRequest.then(function(body) {
+                console.log('Real Time Messaging API Connected')
+                slacksocket.connect(body.url)
+            })
+        })
+        .catch(function(error) {
+            console.log('App Connection Failed :(')
+        })
 })
 
 //Error Handling

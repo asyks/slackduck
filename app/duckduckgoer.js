@@ -1,26 +1,31 @@
 'use strict'
 
-const { Requester } = require("node-duckduckgo");
-const requester = new Requester("node-slackduck");
+const { Requester } = require("node-duckduckgo")
+const slacksocket = require('./slacksocket')
 
+module.exports = sendDuckRequest
+
+const requester = new Requester("node-slackduck")
 requester.no_html = 1
 
-function send_request(query_str) {
+function sendDuckRequest(webSocket, msgChannel, queryTerm) {
 
-    requester.request(query_str, (err, response, body) => {
+    requester.request(queryTerm, function(err, response, body) {
         if (err) {
             console.log(err);
-            return;
         }
-        console.log("DuckDuckGo response recieved");
+        else {
+            console.log("DuckDuckGo response recieved")
+            console.log(body)
+            console.log(response)
 
-        var json_body = JSON.parse(body)
-        var result_url = json_body.AbstractURL
+            var resultUrl = JSON.parse(body).AbstractURL
+            console.log(resultUrl)
 
-        console.log(json_body.AbstractURL);
-
-        return result_url
-    });
+            var respPayload = slacksocket.responsePayload(
+                msgChannel, resultUrl
+            )
+            webSocket.send(respPayload)
+        }
+    })
 }
-
-module.exports = send_request

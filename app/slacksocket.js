@@ -3,14 +3,16 @@
 const WebSocket = require('websocket').w3cwebsocket
 const duckduckgoer = require('./duckduckgoer')
 
-var websocket_url = null
+module.exports.connect = connect
+module.exports.send = send
+module.exports.responsePayload = responsePayload
 
-function create_response_payload(msg_channel, msg_text) {
+function responsePayload(msgChannel, msg_text) {
     return JSON.stringify(
         {
             "id": 1,
             "type": "message",
-            "channel": msg_channel,
+            "channel": msgChannel,
             "text": "message recieved! '{msg_text}'".replace(
                 "{msg_text}", msg_text
             )
@@ -18,45 +20,37 @@ function create_response_payload(msg_channel, msg_text) {
     )
 }
 
-function connect_websocket(error, response, body) {
-    var JSONResponse = JSON.parse(body)
-    websocket_url = JSONResponse.url
+function connect(websocketURL) {
+    var webSocket = new WebSocket(websocketURL)
 
-    var ws = new WebSocket(websocket_url);
-
-    ws.onopen = function() {
+    webSocket.onopen = function() {
         console.log('WebSocket Client Connected')
     }
 
-    ws.onerror = function() {
-        console.log('Connection Error')
+    webSocket.onerror = function() {
+        console.log('WebSocket Connection Error')
     }
 
-    ws.onmessage = function(message) {
+    webSocket.onmessage = function(message) {
 
         console.log("message recieved")
         
         if (typeof message.data === 'string') {
-            var msg_data = JSON.parse(message.data)
-
-            console.log("Received: ", msg_data)
+            var msgData = JSON.parse(message.data)
+            console.log("Received: ", msgData)
         }
-
         if (
-            typeof msg_data.type === 'string' && msg_data.type === 'message'
+            typeof msgData.type === 'string' && msgData.type === 'message'
         ) {
-            var msg_channel = msg_data.channel
-            var msg_text = msg_data.text.slice(13)
-
-            var result_url = duckduckgoer(msg_text)
-
-            var response_payload = create_response_payload(
-                msg_channel, result_url
-            )
-
-            ws.send(response_payload)
+            var msgChannel = msgData.channel
+            var queryTerm = msgData.text.slice(13)
+            duckduckgoer(webSocket, msgChannel, queryTerm)
         }
     }
+
+    return webSocket
 }
 
-module.exports = connect_websocket
+function send(webSocket, msgData) {
+    null
+}
