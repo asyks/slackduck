@@ -10,7 +10,9 @@
   "dependencies": {
     "dotenv": "^4.0.0",
     "express": "^4.13.3",
+    "node-duckduckgo": "^1.0.5",
     "request": "^2.81.0",
+    "request-promise": "^4.2.2",
     "websocket": "^1.0.25"
   }
 }

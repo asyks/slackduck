@@ -3,7 +3,10 @@
 require('dotenv').config()
 
 const express = require('express')
-const authenticate = require('./auth')
+const req = require('request-promise')
+
+const auth = require('./auth')
+const slacksocket = require('./slacksocket')
 
 // Constants
 const PORT = 8080
@@ -13,31 +16,50 @@ const HOST = '0.0.0.0'
 const app = express()
 
 // Middleware
-app.use(function timeLog (req, res, next) {
+app.use(function timeLog (request, response, next) {
     console.log('Time: ', Date.now())
     next()
 })
 
 // Routes
-app.get('/', function(req, res) {
+app.get('/', function(request, response) {
     var payload = {
         'page': 'home',
         'content': 'none yet'
     }
 
-    res.json(payload)
+    response.json(payload)
 })
 
-app.get('/auth', function(req, res) {
-    res.sendFile(__dirname + '/add_to_slack.html')
+app.get('/auth', function(request, response) {
+    response.sendFile(__dirname + '/add_to_slack.html')
 })
 
-app.get('/auth/redirect', function(req, res) {
-    authenticate(req, res)
+app.get('/auth/redirect', function(request, response) {
+
+    var queryCode = request.query.code
+    var options = auth.authOptions(queryCode)
+
+    req(options)
+        .then(function(body) {
+            response.send('App Connection Success!')
+
+            var rtmRequest = auth.rtmConnect(body.bot.bot_access_token)
+
+            rtmRequest.then(function(body) {
+                console.log('Real Time Messaging API Connected')
+                slacksocket.connect(body.url)
+            })
+        })
+        .catch(function(error) {
+            console.log('App Connection Failed :(')
+        })
 })
 
-app.post('/command', function(req, res) {
-    res.send('Your ngrok tunnel is up and running!')
+//Error Handling
+app.use((err, request, response, next) => {
+    console.log(err)
+    response.status(500).send('Something broke!')
 })
 
 app.listen(PORT, HOST)
