@@ -4,7 +4,6 @@ const WebSocket = require('websocket').w3cwebsocket
 const duckduckgoer = require('./duckduckgoer')
 
 module.exports.connect = connect
-module.exports.send = send
 module.exports.responsePayload = responsePayload
 
 function responsePayload(msgChannel, msg_text) {
@@ -18,6 +17,22 @@ function responsePayload(msgChannel, msg_text) {
             )
         }
     )
+}
+
+function isQueryMessage(msgData) {
+
+    if (
+        typeof msgData.type === 'string' &&
+        msgData.type === 'message' &&
+        'text' in msgData
+    ) {
+        console.log("Received Query Message: ", msgData)
+
+        return true
+    }
+    console.log("Received Non-Query Message: ", msgData)
+
+    return false
 }
 
 function connect(websocketURL) {
@@ -38,19 +53,13 @@ function connect(websocketURL) {
         if (typeof message.data === 'string') {
             var msgData = JSON.parse(message.data)
             console.log("Received: ", msgData)
-        }
-        if (
-            typeof msgData.type === 'string' && msgData.type === 'message'
-        ) {
-            var msgChannel = msgData.channel
-            var queryTerm = msgData.text.slice(13)
-            duckduckgoer(webSocket, msgChannel, queryTerm)
+            if (isQueryMessage(msgData)) {
+                var msgChannel = msgData.channel
+                var searchTerm = msgData.text.slice(13)
+                duckduckgoer(webSocket, msgChannel, searchTerm)
+            }
         }
     }
 
     return webSocket
-}
-
-function send(webSocket, msgData) {
-    null
 }

@@ -16,14 +16,11 @@ function sendDuckRequest(webSocket, msgChannel, queryTerm) {
         }
         else {
             console.log("DuckDuckGo response recieved")
-            console.log(body)
-            console.log(response)
 
-            var resultUrl = JSON.parse(body).AbstractURL
-            console.log(resultUrl)
+            var jsonBody = JSON.parse(body)
 
             var respPayload = slacksocket.responsePayload(
-                msgChannel, resultUrl
+                msgChannel, jsonBody.AbstractURL
             )
             webSocket.send(respPayload)
         }
