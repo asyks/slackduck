@@ -12,7 +12,7 @@ function responsePayload(msgChannel, msg_text) {
             "id": 1,
             "type": "message",
             "channel": msgChannel,
-            "text": "message recieved! '{msg_text}'".replace(
+            "text": "Here's What I Found {msg_text}".replace(
                 "{msg_text}", msg_text
             )
         }
@@ -26,13 +26,19 @@ function isQueryMessage(msgData) {
         msgData.type === 'message' &&
         'text' in msgData
     ) {
-        console.log("Received Query Message: ", msgData)
+        console.log("Query Message: ", msgData)
 
         return true
     }
-    console.log("Received Non-Query Message: ", msgData)
+    console.log("Non-Query Message: ", msgData)
 
     return false
+}
+
+function parseMsgText(msgText) {
+    console.log(msgText)
+
+    var searchTerm = msgText.slice(13)
 }
 
 function connect(websocketURL) {
@@ -48,14 +54,13 @@ function connect(websocketURL) {
 
     webSocket.onmessage = function(message) {
 
-        console.log("message recieved")
-        
         if (typeof message.data === 'string') {
             var msgData = JSON.parse(message.data)
             console.log("Received: ", msgData)
+
             if (isQueryMessage(msgData)) {
                 var msgChannel = msgData.channel
-                var searchTerm = msgData.text.slice(13)
+                var searchTerm = parseMsgText(msgData.text)
                 duckduckgoer(webSocket, msgChannel, searchTerm)
             }
         }
