@@ -55,7 +55,7 @@ app.get('/auth/redirect', function (request, response) {
       })
     })
     .catch(function (error) {
-      console.log('App Connection Failed :(' + error)
+      console.log('App Connection Failed ' + error)
     })
 })
 

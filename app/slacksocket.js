@@ -6,65 +6,66 @@ const duckduckgoer = require('./duckduckgoer')
 module.exports.connect = connect
 module.exports.responsePayload = responsePayload
 
-function responsePayload(msgChannel, msg_text) {
-    return JSON.stringify(
-        {
-            "id": 1,
-            "type": "message",
-            "channel": msgChannel,
-            "text": "Here's What I Found {msg_text}".replace(
-                "{msg_text}", msg_text
-            )
-        }
-    )
+function responsePayload (msgChannel, msgText) {
+  return JSON.stringify(
+    {
+      'id': 1,
+      'type': 'message',
+      'channel': msgChannel,
+      'text': 'Here\'s What I Found {msgText}'.replace(
+        '{msgText}', msgText
+      )
+    }
+  )
 }
 
-function isQueryMessage(msgData) {
+function isQueryMessage (msgData) {
+  if (
+    typeof msgData.type === 'string' &&
+    msgData.type === 'message' &&
+    'text' in msgData
+  ) {
+    console.log('Query Message: ', msgData)
 
-    if (
-        typeof msgData.type === 'string' &&
-        msgData.type === 'message' &&
-        'text' in msgData
-    ) {
-        console.log("Query Message: ", msgData)
+    return true
+  }
+  console.log('Non-Query Message: ', msgData)
 
-        return true
-    }
-    console.log("Non-Query Message: ", msgData)
-
-    return false
+  return false
 }
 
-function parseMsgText(msgText) {
-    console.log(msgText)
+function parseMsgText (msgText) {
+  console.log(msgText)
 
-    var searchTerm = msgText.slice(13)
+  var searchTerm = msgText.slice(13)
+
+  return searchTerm
 }
 
-function connect(websocketURL) {
-    var webSocket = new WebSocket(websocketURL)
+function connect (websocketURL) {
+  var webSocket = new WebSocket(websocketURL)
 
-    webSocket.onopen = function() {
-        console.log('WebSocket Client Connected')
+  webSocket.onopen = function () {
+    console.log('WebSocket Client Connected')
+  }
+
+  webSocket.onerror = function () {
+    console.log('WebSocket Connection Error')
+  }
+
+  webSocket.onmessage = function (message) {
+    if (typeof message.data === 'string') {
+      var msgData = JSON.parse(message.data)
+      console.log('Received: ', msgData)
+
+      if (isQueryMessage(msgData)) {
+        var msgChannel = msgData.channel
+        var searchTerm = parseMsgText(msgData.text)
+
+        duckduckgoer(webSocket, msgChannel, searchTerm)
+      }
     }
+  }
 
-    webSocket.onerror = function() {
-        console.log('WebSocket Connection Error')
-    }
-
-    webSocket.onmessage = function(message) {
-
-        if (typeof message.data === 'string') {
-            var msgData = JSON.parse(message.data)
-            console.log("Received: ", msgData)
-
-            if (isQueryMessage(msgData)) {
-                var msgChannel = msgData.channel
-                var searchTerm = parseMsgText(msgData.text)
-                duckduckgoer(webSocket, msgChannel, searchTerm)
-            }
-        }
-    }
-
-    return webSocket
+  return webSocket
 }
