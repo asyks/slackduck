@@ -7,7 +7,7 @@ const path = require('path')
 const express = require('express')
 const req = require('request-promise')
 
-const auth = require('./auth')
+const slackauth = require('./slackauth')
 const slacksocket = require('./slacksocket')
 
 // Constants
@@ -41,13 +41,13 @@ app.get('/auth', function (request, response) {
 
 app.get('/auth/redirect', function (request, response) {
   var queryCode = request.query.code
-  var options = auth.authOptions(queryCode)
+  var options = slackauth.authOptions(queryCode)
 
   req(options)
     .then(function (body) {
       response.send('App Connection Success!')
 
-      var rtmRequest = auth.rtmConnect(body.bot.bot_access_token)
+      var rtmRequest = slackauth.rtmConnect(body.bot.bot_access_token)
 
       rtmRequest.then(function (body) {
         console.log('Real Time Messaging API Connected')
