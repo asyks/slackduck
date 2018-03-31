@@ -45,14 +45,17 @@ app.get('/auth/redirect', function (request, response) {
 
   req(options)
     .then(function (body) {
-      response.send('App Connection Success!')
+      if (body.ok === true) {
+        response.send('App Connection Success!')
 
-      var rtmRequest = slackauth.rtmConnect(body.bot.bot_access_token)
-
-      rtmRequest.then(function (body) {
-        console.log('Real Time Messaging API Connected')
-        slacksocket.connect(body.url)
-      })
+        var rtmRequest = slackauth.rtmConnect(body.bot.bot_access_token)
+        rtmRequest.then(function (body) {
+          console.log('Real Time Messaging API Connected')
+          slacksocket.connect(body.self.id, body.url)
+        })
+      } else {
+        response.send('App Connection Failed ' + body.error)
+      }
     })
     .catch(function (error) {
       console.log('App Connection Failed ' + error)

@@ -34,15 +34,21 @@ function isQueryMessage (msgData) {
   return false
 }
 
-function parseMsgText (msgText) {
+function parseMsgText (botUserId, msgText) {
   console.log(msgText)
 
-  var searchTerm = msgText.slice(13)
+  var botUserIdPos = msgText.search(botUserId)
+  msgText = msgText.trim().toLowerCase()
+  var searchTerm = msgText.slice(
+    botUserIdPos + botUserId.length + 1
+  )
+
+  console.log(searchTerm)
 
   return searchTerm
 }
 
-function connect (websocketURL) {
+function connect (botUserId, websocketURL) {
   var webSocket = new WebSocket(websocketURL)
 
   webSocket.onopen = function () {
@@ -60,7 +66,7 @@ function connect (websocketURL) {
 
       if (isQueryMessage(msgData)) {
         var msgChannel = msgData.channel
-        var searchTerm = parseMsgText(msgData.text)
+        var searchTerm = parseMsgText(botUserId, msgData.text)
 
         duckduckgoer(webSocket, msgChannel, searchTerm)
       }
