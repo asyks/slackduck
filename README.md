@@ -1,5 +1,17 @@
 # slackduck
 
+## Prerequisites
+
+Docker and docker-compose
+
+ngrok - for local manual testing
+
+dotenv file with the following vars:
+
+* CLIENT_ID - slack api app client id
+* CLIENT_SECRET - slack api app client secret
+* REDIRECT_URI - an oauth redirect url (ngrok url for local testing)
+
 ## Building and Running slackduck
 
 Build using docker-compose
