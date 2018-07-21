@@ -2,11 +2,11 @@
 
 ## Prerequisites
 
-Docker and docker-compose
+Docker and docker-compose for local testing
 
-ngrok - for local manual testing
+ngrok (https://ngrok.com/) for local manual testing
 
-dotenv file with the following vars:
+dotenv (https://www.npmjs.com/package/dotenv) file with the following vars:
 
 * CLIENT_ID - slack api app client id
 * CLIENT_SECRET - slack api app client secret
