@@ -16,7 +16,19 @@ function sendDuckRequest (webSocket, msgChannel, queryTerm) {
     } else {
       console.log('DuckDuckGo response recieved')
 
-      var jsonBody = JSON.parse(body)
+      try {
+        var jsonBody = JSON.parse(body)
+      }
+      catch(err) {
+        if (err instanceof SyntaxError) {
+          console.log('DuckDuckGo response not valid json')
+        }
+        else {
+          console.log('DuckDuckGo response error')
+        }
+      }
+
+      console.log(jsonBody)
 
       var respPayload = slacksocket.responsePayload(
         msgChannel, jsonBody.AbstractURL
