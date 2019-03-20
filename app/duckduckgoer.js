@@ -4,13 +4,13 @@ const { Requester } = require('node-duckduckgo')
 
 const slacksocket = require('./slacksocket')
 
-module.exports = sendDuckRequest
+module.exports.sendDuckRequest = sendDuckRequest
 
 const requester = new Requester('node-slackduck')
 requester.no_html = 1
 
 function sendDuckRequest (webSocket, msgChannel, queryTerm) {
-  requester.request(queryTerm, function (err, response, body) {
+  requester.request(queryTerm, (err, response, body) => {
     if (err) {
       console.log(err)
     } else {

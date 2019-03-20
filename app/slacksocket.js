@@ -23,15 +23,18 @@ function isQueryMessage (msgData) {
   if (
     typeof msgData.type === 'string' &&
     msgData.type === 'message' &&
+    msgData.subtype != 'bot_add' &&
     'text' in msgData
   ) {
     console.log('Query Message: ', msgData)
 
     return true
-  }
-  console.log('Non-Query Message: ', msgData)
 
-  return false
+  } else {
+    console.log('Non-Query Message: ', msgData)
+
+    return false
+  }
 }
 
 function parseMsgText (botUserId, msgText) {
@@ -68,7 +71,7 @@ function connect (botUserId, websocketURL) {
         var msgChannel = msgData.channel
         var searchTerm = parseMsgText(botUserId, msgData.text)
 
-        duckduckgoer(webSocket, msgChannel, searchTerm)
+        duckduckgoer.sendDuckRequest(webSocket, msgChannel, searchTerm)
       }
     }
   }
